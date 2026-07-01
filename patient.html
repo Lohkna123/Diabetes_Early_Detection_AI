@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Patient Details</h2>
+        {% if data %}
+        <p><strong>ID:</strong> {{ data[0] }}</p>
+        <p><strong>Patient ID:</strong> {{ data[1] }}</p>
+        <p><strong>Age:</strong> {{ data[10] }}</p>
+        <p><strong>Prediction:</strong> {{ data[11] }}</p>
+        <p><strong>Risk:</strong> {{ "%.1f"|format(data[12]) }}%</p>
+        {% else %}
+        <p>Patient not found</p>
+        {% endif %}
+        <a href="/history" class="btn">Back</a>
+    </div>
+</body>
+</html>
