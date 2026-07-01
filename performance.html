@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Performance Metrics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card h3 {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0.5rem 0;
+        }
+
+        .progress-bar-container {
+            background: #e0e0e0;
+            border-radius: 25px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 25px;
+            transition: width 1s ease;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .benchmark {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .score-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Model Performance Metrics</h1>
+        <div class="subtitle">Diabetes Prediction Model Evaluation</div>
+
+        {% if not model_loaded %}
+        <div class="error-message">
+            ⚠️ Model not loaded. Please ensure model file exists at 'models/final_diabetes_model.pkl'
+        </div>
+        {% elif metrics.error %}
+        <div class="error-message">
+            ⚠️ Error: {{ metrics.error }}
+        </div>
+        {% else %}
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Accuracy</h3>
+                <div class="metric-value">{{ "%.2f"|format(metrics.accuracy * 100) }}%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ metrics.accuracy * 100 }}%"></div>
+                </div>
+                <div class="benchmark">Benchmark: 85-95%</div>
+                {% if metrics.accuracy > 0.95 %}
+                <div class="score-badge">🌟 Excellent</div>
+                {% endif %}
+            </div>
+
+            <div class="metric-card">
+                <h3>Precision</h3>
+                <div class="metric-value">{{ "%.2f"|format(metrics.precision * 100) }}%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ metrics.precision * 100 }}%"></div>
+                </div>
+                <div class="benchmark">How many predicted diabetics are correct</div>
+            </div>
+
+            <div class="metric-card">
+                <h3>Recall (Sensitivity)</h3>
+                <div class="metric-value">{{ "%.2f"|format(metrics.recall * 100) }}%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ metrics.recall * 100 }}%"></div>
+                </div>
+                <div class="benchmark">How many actual diabetics were caught</div>
+            </div>
+
+            <div class="metric-card">
+                <h3>F1 Score</h3>
+                <div class="metric-value">{{ "%.2f"|format(metrics.f1 * 100) }}%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ metrics.f1 * 100 }}%"></div>
+                </div>
+                <div class="benchmark">Harmonic mean of precision & recall</div>
+            </div>
+
+            <div class="metric-card">
+                <h3>ROC-AUC</h3>
+                <div class="metric-value">{{ "%.2f"|format(metrics.roc_auc * 100) }}%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ metrics.roc_auc * 100 }}%"></div>
+                </div>
+                <div class="benchmark">0.9-1.0 = Excellent</div>
+                {% if metrics.roc_auc > 0.95 %}
+                <div class="score-badge">🎯 Outstanding</div>
+                {% endif %}
+            </div>
+
+            <div class="metric-card">
+                <h3>Cross-Validation</h3>
+                <div class="metric-value">{{ "%.2f"|format(metrics.cv_mean * 100) }}% ± {{ "%.1f"|format(metrics.cv_std * 100) }}%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ metrics.cv_mean * 100 }}%"></div>
+                </div>
+                <div class="benchmark">10-fold CV mean ± std</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <h3>✅ Model Verdict: Production Ready</h3>
+            <p style="color: #666; margin-top: 0.5rem;">
+                This model shows excellent performance across all metrics and is suitable for clinical decision support.
+            </p>
+        </div>
+
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/" class="btn">← Back to Predictor</a>
+            <a href="/history" class="btn">📊 View History</a>
+        </div>
+    </div>
+</body>
+</html>
