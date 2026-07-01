@@ -1,0 +1,1 @@
+# AI_Based_Early_Disease_Detection_Diabetes
